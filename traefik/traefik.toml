@@ -1,0 +1,21 @@
+[api]
+  dashboard = true
+  insecure = true
+
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+  [entryPoints.https]
+    address = ":443"
+
+[providers]
+  [providers.docker]
+    exposedByDefault = false
+
+[log]
+  level = "DEBUG"
+
+[tls]
+  [tls.options]
+    [tls.options.default]
+      minVersion = "VersionTLS12"
