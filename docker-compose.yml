@@ -63,6 +63,7 @@ services:
   webserver:
     build:
       context: ./webserver
+      dockerfile: Dockerfile
     networks:
       - acme_network
     volumes:
