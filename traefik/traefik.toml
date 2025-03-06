@@ -1,21 +1,19 @@
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+  [entryPoints.websecure]
+    address = ":443"
+
+[providers]
+  [providers.file]
+    filename = "/traefik/config.yaml"
+
 [api]
   dashboard = true
   insecure = true
 
-[entryPoints]
-  [entryPoints.http]
-    address = ":80"
-  [entryPoints.https]
-    address = ":443"
-
-[providers]
-  [providers.docker]
-    exposedByDefault = false
-
-[log]
-  level = "DEBUG"
-
-[tls]
-  [tls.options]
-    [tls.options.default]
-      minVersion = "VersionTLS12"
+[certificatesResolvers.myresolver.acme]
+  email = "your-email@example.com"
+  storage = "/letsencrypt/acme.json"
+  [certificatesResolvers.myresolver.acme.tlsChallenge]
+    entryPoint = "web"

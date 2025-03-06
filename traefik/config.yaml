@@ -1,51 +1,41 @@
 http:
   routers:
-    pve1:
+    authelia:
+      rule: "Host(`authelia.acme.se`)"
       entryPoints:
-        - "https"
-      rule: "Host(`traefik.acme.se`)"
+        - websecure
+      service: authelia
+
+    webserver:
+      rule: "Host(`webserver.acme.se`)"
+      entryPoints:
+        - websecure
+      service: webserver
       middlewares:
-        - aut
-        - default-headers
-      tls: {}
-      service: pve1
+        - authelia
+
+    traefik:
+      rule: "Host(`traefik.acme.se`)"
+      entryPoints:
+        - websecure
+      service: api@internal
+
   services:
-    pve1:
+    authelia:
       loadBalancer:
         servers:
-                - url: "http://192.168.1.230:9090"
-        passHostHeader: true
+          - url: http://authelia:9091
+
+    webserver:
+      loadBalancer:
+        servers:
+          - url: http://webserver:80
 
   middlewares:
-    https-redirect:
-      redirectScheme:
-        scheme: https
-
-    aut:
+    authelia:
       forwardAuth:
-        address: "http://authelia:9091/api/verify?rd=https://authelia.acme.se"
+        address: http://authelia:9091/api/verify?rd=https://authelia.acme.se
         trustForwardHeader: true
         authResponseHeaders:
-          - "Remote-User"
-          - "Remote-Groups"
-          - "Remote-Name"
-          - "Remote-Email"
-    default-headers:
-      headers:
-        frameDeny: true
-        sslRedirect: true
-        browserXssFilter: true
-        contentTypeNosniff: true
-        forceSTSHeader: true
-        stsIncludeSubdomains: true
-        stsPreload: true
-        stsSeconds: 15552000
-        customFrameOptionsValue: SAMEORIGIN
-        customRequestHeaders:
-          X-Forwarded-Proto: https
-
-    secured:
-      chain:
-        middlewares:
-        - default-whitelist
-        - default-headers
+          - Remote-User
+          - Remote-Groups
