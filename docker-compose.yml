@@ -19,7 +19,7 @@ services:
       - "traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)"
       - "traefik.http.routers.authelia.entrypoints=https"
       - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://authelia.acme.se"
+      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://authelia.acme.se:9091"
       - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email"
     expose:  
