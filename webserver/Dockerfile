@@ -28,7 +28,5 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Expose port 80
 EXPOSE 3000
 
-RUN npm start
-
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
