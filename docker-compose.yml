@@ -31,13 +31,18 @@ services:
     image: traefik:v2.4
     container_name: traefik
     command:
-      - "--providers.file.filename=/traefik/config.yaml"
-      - "--entrypoints.http.address=:80"
-      - "--entrypoints.https.address=:443"
-      - "--entrypoints.https=true"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
-      - "--api.dashboard=true"
+       - '--api'
+       - '--providers.docker=true'
+       - '--providers.docker.exposedByDefault=false'
+       - '--providers.file.filename=/etc/traefik/certificates.yml'
+       - '--entrypoints.http=true'
+       - '--entrypoints.http.address=:80'
+       - '--entrypoints.http.http.redirections.entrypoint.to=https'
+       - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
+       - '--entrypoints.https=true'
+       - '--entrypoints.https.address=:443'
+       - '--log=true'
+       - '--log.level=DEBUG'
     ports:
       - "80:80"
       - "443:443"
