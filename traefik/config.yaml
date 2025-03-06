@@ -3,7 +3,7 @@ http:
     pve1:
       entryPoints:
         - "https"
-      rule: "Host(`webserver.acme.se`)"
+      rule: "Host(`traefik.acme.se`)"
       middlewares:
         - aut
         - default-headers

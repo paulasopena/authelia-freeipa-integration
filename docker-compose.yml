@@ -4,32 +4,33 @@ networks:
     driver: bridge
 
 services:
-authelia:
-  image: authelia/authelia
-  container_name: authelia
-  volumes:
-    - ./authelia:/config
-  networks:
-    - net
-  labels:
-    - 'traefik.enable=true'
-    - 'traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)'
-    - 'traefik.http.routers.authelia.entrypoints=https'
-    - 'traefik.http.routers.authelia.tls=true'
-    - 'traefik.http.routers.authelia.tls.options=default'
-    - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://authelia.acme.se'
-    - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
-    - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
-  expose:
-    - 9091
-  restart: unless-stopped
-  healthcheck:
-    test: ["CMD-SHELL", "curl -f http://localhost:9091 || exit 1"]
-    interval: 1m30s
-    timeout: 10s
-    retries: 3
-  environment:
-    - TZ=Asia/Tehran
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    volumes:
+      - ./authelia:/config
+    networks:
+      - net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)'
+      - 'traefik.http.routers.authelia.entrypoints=https'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.routers.authelia.tls.options=default'
+      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://authelia.acme.se'
+      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    expose:
+      - 9091
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9091 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - TZ=Asia/Tehran
+  
   traefik:
     image: traefik:2.4
     container_name: traefik
@@ -59,18 +60,20 @@ authelia:
       - '--entrypoints.https.address=:443'
       - '--log.level=DEBUG'
 
-  secure:
-    image: traefik/whoami
-    container_name: secure
-    networks:
-      - net
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.secure.rule=Host(`secure.acme.se`)'
-      - 'traefik.http.routers.secure.entrypoints=https'
-      - 'traefik.http.routers.secure.tls=true'
-      - 'traefik.http.routers.secure.tls.options=default'
-      - 'traefik.http.routers.secure.middlewares=authelia'
-    expose:
-      - 80
-    restart: unless-stopped
+  webserver:
+      image: webserver-image
+      container_name: webserver
+      build:
+        context: ./webserver
+      networks:
+        - net
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)'
+        - 'traefik.http.routers.webserver.entrypoints=https'
+        - 'traefik.http.routers.webserver.tls=true'
+        - 'traefik.http.routers.webserver.tls.options=default'
+        - 'traefik.http.routers.webserver.middlewares=authelia'
+      expose:
+        - 80
+      restart: unless-stopped

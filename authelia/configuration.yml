@@ -44,8 +44,6 @@ access_control:
   rules:
     - domain: webserver.acme.se
       policy: one_factor
-    - domain: secure.acme.se
-      policy: one_factor
     - domain: traefik-dashboard.acme.se
       policy: one_factor
     - domain: traefik.acme.se
