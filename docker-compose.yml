@@ -75,6 +75,8 @@ services:
       - "traefik.http.routers.webserver.middlewares=authelia@docker"
       - 'traefik.http.routers.webserver.tls=true'
       - 'traefik.http.routers.webserver.tls.options=default' 
+      - 'traefik.http.routers.webserver.service=api@internal'
+
     expose: 
       - 3000
     
