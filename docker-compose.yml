@@ -29,6 +29,7 @@ services:
 
   traefik:
     image: traefik:v2.4
+    container_name: traefik
     command:
       - "--providers.file.filename=/traefik/config.yaml"
       - "--entrypoints.http.address=:80"
@@ -42,17 +43,16 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik:/traefik
+      - ./traefik:./traefik
     networks:
       - acme_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.acme.se`)"
-      - "traefik.http.routers.traefik.entrypoints=https"
-      - "traefik.http.routers.traefik.middleware=authelia"
-      - "traefik.http.routers.traefik.tls.options=default"
-      - "traefik.http.routers.traefik.tls=true"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api.rule=Host(`traefik.acme.se`)"
+      - "traefik.http.routers.api.entrypoints=https"
+      - "traefik.http.routers.api.middleware=authelia"
+      - "traefik.http.routers.api.tls.options=default"
+      - "traefik.http.routers.api.tls=true"
 
   webserver:
     build:
