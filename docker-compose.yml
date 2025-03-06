@@ -71,7 +71,10 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)"
       - "traefik.http.routers.webserver.entrypoints=https"
-      - "traefik.http.services.webserver.loadbalancer.server.port=80"
+      - "traefik.http.routers.webserver.middlewares=authelia@docker"
+    expose: 
+      - 8080
+
 
 
       
