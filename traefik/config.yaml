@@ -3,21 +3,17 @@ http:
     authelia:
       rule: "Host(`authelia.acme.se`)"
       entryPoints:
-        - websecure
+        - "https"
       service: authelia
 
     webserver:
       rule: "Host(`webserver.acme.se`)"
-      entryPoints:
-        - websecure
       service: webserver
       middlewares:
         - authelia
 
     traefik:
       rule: "Host(`traefik.acme.se`)"
-      entryPoints:
-        - websecure
       service: api@internal
 
   services:

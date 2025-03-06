@@ -1,12 +1,17 @@
 [entryPoints]
-  [entryPoints.web]
+  [entryPoints.http]
     address = ":80"
-  [entryPoints.websecure]
+  [entryPoints.https]
     address = ":443"
 
 [providers]
+  [providers.docker]
+    endpoint = "unix://var/run/docker.sock"
+    exposedByDefault = false
+    network = "acme_network"
+    defaultRule = "Host(`{{ normalize .Name }}.acme.se`)"
   [providers.file]
-    filename = "/traefik/config.yaml"
+    filename = "/etc/traefik/config.yml"
 
 [api]
   dashboard = true
