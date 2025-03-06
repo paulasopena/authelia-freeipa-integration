@@ -1,8 +1,13 @@
 version: '3.8'
 
+networks:
+  acme_network:
+    driver: bridge
+  
 services:
   authelia:
     image: authelia/authelia
+    container_name: authelia
     volumes:
       - ./authelia:/config
     networks:
@@ -16,7 +21,10 @@ services:
       - "traefik.http.services.authelia.loadbalancer.server.port=9091"
       - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://authelia.acme.se"
       - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups"
+      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email"
+    expose:  
+      - 9091
+    
 
 
   traefik:
@@ -59,7 +67,5 @@ services:
       - "traefik.http.routers.webserver.entrypoints=https"
       - "traefik.http.services.webserver.loadbalancer.server.port=80"
 
-networks:
-  acme_network:
-    driver: bridge
+
       
