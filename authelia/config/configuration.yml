@@ -1,0 +1,56 @@
+server:
+  address: 'tcp4://:9091'
+
+log:
+  level: debug
+  file_path: '/var/log/authelia/authelia.log'
+  keep_stdout: true
+
+jwt_secret: a_very_important_secret
+
+totp:
+  disable: false
+  issuer: 'acme.se'
+  period: 30
+  skew: 1
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+    password:
+      algorithm: 'argon2'
+      argon2:
+        variant: 'argon2id'
+        salt: 16
+
+access_control:
+  default_policy: 'deny'
+  rules:
+    - domain: 'traefik.acme.se'
+      policy: 'one_factor'
+    - domain: 'whoami-secure.acme.se'
+      policy: 'two_factor'
+    - domain: 'webserver.acme.se'
+      policy: 'one_factor'
+
+session:
+  name: authelia_session
+  secret: unsecure_session_secret
+  expiration: 3600  # 1 hour
+  inactivity: 300  # 5 minutes
+  domain: acme.se
+  
+regulation:
+  max_retries: 4
+  find_time: 120
+  ban_time: 300
+
+storage:
+  encryption_key: {{ secret "/secrets/storage_encryption_key.txt" | mindent 0 "|" | msquote }}
+  local:
+    path: '/config/db.sqlite3'
+
+notifier:
+  disable_startup_check: false
+  filesystem:
+    filename: '/config/notification.txt'

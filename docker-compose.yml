@@ -1,71 +1,80 @@
 version: '3.8'
-
-networks:
-  net:
-    driver: bridge
   
 services:
-  authelia:
-    image: 'authelia/authelia'
-    container_name: 'authelia'
-    restart: 'unless-stopped' 
-    volumes:
-      - '${PWD}/authelia:/config'
-    networks:
-      net: {}
-    environment:
-      TZ: 'Sweden/Stockholm'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)'
-      - 'traefik.http.routers.authelia.entrypoints=https'
-      - 'traefik.http.routers.authelia.tls=true'
-      - 'traefik.http.routers.authelia.tls.option=default'
-      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=http://authelia.acme.se:9091'
-      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
-      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email'
   traefik:
-    image: 'traefik:v2.4'
+    image: 'traefik:latest'
     container_name: 'traefik'
     restart: 'unless-stopped'
-    command:
-      - '--api=true'
-      - '--api.dashboard=true'
-      - '--api.insecure=false'
-      - '--pilot.dashboard=false'
-      - '--global.sendAnonymousUsage=false'
-      - '--global.checkNewVersion=false'
-      - '--log=true'
-      - '--log.level=DEBUG'
-      - '--log.filepath=/config/traefik.log'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedByDefault=false'
-      - '--entryPoints.http=true'
-      - '--entryPoints.http.address=:8080/tcp'
-      - '--entryPoints.http.http.redirections.entryPoint.to=https'
-      - '--entryPoints.http.http.redirections.entryPoint.scheme=https'
-      - '--entryPoints.http.forwardedHeaders.insecure=false'
-      - '--entryPoints.http.proxyProtocol.insecure=false'
-      - '--entryPoints.https=true'
-      - '--entryPoints.https.address=:8443/tcp'
-      - '--entryPoints.https.forwardedHeaders.insecure=false'
-      - '--entryPoints.https.proxyProtocol.insecure=false'
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock'
-      - '${PWD}/traefik:/config'
+    security_opt:
+      - 'no-new-privileges=true'
     networks:
-      net: {}
+      proxy:
+        aliases:
+          - 'authelia.acme.se'
+      authelia: {}
     ports:
-      - '80:8080'
-      - '443:8443'
+      - '80:80'
+      - '443:443'
+    environment:
+      TZ: 'America/Los_Angeles' ## see below
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - './traefik/config/traefik.yml:/traefik.yml:ro'
+      - './traefik/config/dynamic.yml:/dynamic.yml:ro'
+      - './traefik/data/:/data'
+      - './traefik/logs:/logs'
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=Host(`traefik.acme.se`)'
-      - 'traefik.http.routers.api.entrypoints=https'
-      - 'traefik.http.routers.api.middlewares=authelia@docker'
-      - 'traefik.http.routers.api.tls.options=default'
-      - 'traefik.http.routers.api.tls=true'
-      - 'traefik.http.routers.api.service=api@internal'
+      traefik.enable: 'true'
+      traefik.http.routers.dashboard.rule: 'Host(`traefik.acme.se`)'
+      traefik.http.routers.dashboard.entrypoints: 'https'
+      traefik.http.routers.dashboard.middlewares: 'authelia@docker'
+      traefik.http.routers.dashboard.service: 'api@internal'
+
+   whoami:
+    image: 'traefik/whoami'
+    restart: 'unless-stopped'
+    container_name: 'whoami'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.whoami.rule: 'Host(`whoami.example.com`)'
+      traefik.http.routers.whoami.entrypoints: 'https'
+    networks:
+      proxy: {}
+
+  authelia:
+    image: 'authelia/authelia:4.38'
+    container_name: 'authelia'
+    volumes:
+      - './authelia/secrets:/secrets:ro'
+      - './authelia/config:/config'
+      - './authelia/logs:/var/log/authelia/'
+    networks:
+      authelia: {}
+    labels:
+      ## Expose Authelia through Traefik
+      traefik.enable: 'true'
+      traefik.docker.network: 'authelia'
+      traefik.http.routers.authelia.rule: 'Host(`authelia.acme.se`)'
+      traefik.http.routers.authelia.entrypoints: 'https'
+      ## Setup Authelia ForwardAuth Middlewares
+      traefik.http.middlewares.authelia.forwardAuth.address: 'http://authelia:9091/api/authz/forward-auth'
+      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: 'true'
+      traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    environment:
+      TZ: 'America/Los_Angeles'
+      X_AUTHELIA_CONFIG_FILTERS: 'template'
+
+  whoami-secure:
+    image: 'traefik/whoami'
+    restart: 'unless-stopped'
+    container_name: 'whoami-secure'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.whoami-secure.rule: 'Host(`whoami-secure.example.com`)'
+      traefik.http.routers.whoami-secure.entrypoints: 'https'
+      traefik.http.routers.whoami-secure.middlewares: 'authelia@docker'
+    networks:
+      proxy: {}
 
   webserver:
     build:
@@ -80,3 +89,10 @@ services:
       - 'traefik.http.routers.webserver.entrypoints=https'
       - 'traefik.http.routers.webserver.middlewares=authelia@docker'
       - 'traefik.http.routers.webserver.tls=true'
+
+networks:
+  proxy:
+    external: true
+    name: 'proxy'
+  authelia:
+    name: 'authelia'
