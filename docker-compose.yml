@@ -52,7 +52,7 @@ services:
       - '--entryPoints.https.proxyProtocol.insecure=false'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - '${PWD}/traefik:/traefik'
+      - '${PWD}/traefik:/config'
     networks:
       net: {}
     ports:
