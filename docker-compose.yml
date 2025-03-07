@@ -1,5 +1,3 @@
-version: '3.8'
-  
 services:
   traefik:
     image: 'traefik:latest'
@@ -16,7 +14,7 @@ services:
       - '80:80'
       - '443:443'
     environment:
-      TZ: 'America/Los_Angeles' ## see below
+      TZ: 'America/Los_Angeles' # see below
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
       - './traefik/config/traefik.yml:/traefik.yml:ro'
@@ -30,7 +28,7 @@ services:
       traefik.http.routers.dashboard.middlewares: 'authelia@docker'
       traefik.http.routers.dashboard.service: 'api@internal'
 
-   whoami:
+  whoami:
     image: 'traefik/whoami'
     restart: 'unless-stopped'
     container_name: 'whoami'
@@ -82,7 +80,7 @@ services:
       dockerfile: 'Dockerfile'
     container_name: 'webserver_acme'
     networks:
-      net: {}
+      proxy: {}
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)'
