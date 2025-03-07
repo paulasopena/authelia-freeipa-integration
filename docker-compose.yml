@@ -24,11 +24,6 @@ services:
       - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=http://authelia.acme.se:9091'
       - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
       - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email'
-    expose:  
-      - 9091
-    
-
-
   traefik:
     image: 'traefik:v2.4'
     container_name: 'traefik'
@@ -85,7 +80,3 @@ services:
       - 'traefik.http.routers.webserver.entrypoints=https'
       - 'traefik.http.routers.webserver.middlewares=authelia@docker'
       - 'traefik.http.routers.webserver.tls=true'
- 
-
-
-      
