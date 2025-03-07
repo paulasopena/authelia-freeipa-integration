@@ -8,12 +8,6 @@ http:
       middlewares:
         - authelia
 
-    webserver:
-      rule: "Host(`webserver.acme.se`)"
-      service: webserver
-      middlewares:
-        - authelia
-
     traefik:
       rule: "Host(`traefik.acme.se`)"
       service: api@internal
@@ -27,7 +21,7 @@ http:
     webserver:
       loadBalancer:
         servers:
-          - url: http://webserver:80
+          - url: http://webserver:3000
 
   middlewares:
     authelia:

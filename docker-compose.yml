@@ -12,12 +12,12 @@ services:
       - ./authelia:/config
     networks:
       - acme_network
-    ports:
-      - 9091:9091
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)"
       - "traefik.http.routers.authelia.entrypoints=https"
+      - "traefik.http.routers.authelia.tls=true"
+      - "traefik.http.routers.authelia.tls.option=default"
       - "traefik.http.services.authelia.loadbalancer.server.port=9091"
       - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=http://authelia.acme.se:9091"
       - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
@@ -34,7 +34,7 @@ services:
        - '--api'
        - '--providers.docker=true'
        - '--providers.docker.exposedByDefault=false'
-       - '--providers.file.filename=/etc/traefik/certificates.yml'
+       - '--providers.file.filename=/traefik/certificates.yml'
        - '--entrypoints.http=true'
        - '--entrypoints.http.address=:80'
        - '--entrypoints.http.http.redirections.entrypoint.to=https'
@@ -55,7 +55,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`traefik.acme.se`)"
       - "traefik.http.routers.api.entrypoints=https"
-      - "traefik.http.routers.api.middlewares=authelia@docker"
+      - "traefik.http.routers.api.middlewares=authelia"
       - "traefik.http.routers.api.tls.options=default"
       - "traefik.http.routers.api.tls=true"
       - 'traefik.http.routers.api.service=api@internal'
@@ -64,18 +64,17 @@ services:
     build:
       context: ./webserver
       dockerfile: Dockerfile
-    ports: 
-      - 3000:3000
+    container_name: webserver
     networks:
       - acme_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)"
-      - "traefik.http.routers.webserver.entrypoints=http"
-      - "traefik.http.routers.webserver.middlewares=authelia@docker"
+      - "traefik.http.routers.webserver.entrypoints=https"
+      - "traefik.http.routers.webserver.middlewares=authelia"
       - 'traefik.http.routers.webserver.tls=true'
       - 'traefik.http.routers.webserver.tls.options=default' 
-      - 'traefik.http.routers.webserver.service=api@internal'
+      - "traefik.http.routers.webserver.loadbalancer.server.port=3000"
 
     expose: 
       - 3000
