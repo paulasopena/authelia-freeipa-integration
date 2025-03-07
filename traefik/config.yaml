@@ -1,3 +1,6 @@
+entryPoints: 
+  http: 
+    address: ':8080'
 http:
   routers:
     authelia:

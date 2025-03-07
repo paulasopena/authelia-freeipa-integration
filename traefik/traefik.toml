@@ -1,14 +1,18 @@
 [entryPoints]
   [entryPoints.http]
     address = ":8080"
+    [entryPoints.http.proxyProtocol]
+      trustedIPs = ["192.168.1.0/24", "172.16.0.0/12"]
   [entryPoints.https]
     address = ":8443"
+    [entryPoints.https.proxyProtocol]
+      trustedIPs = ["192.168.1.0/24", "172.16.0.0/12"]
 
 [providers]
   [providers.docker]
     endpoint = "unix://var/run/docker.sock"
     exposedByDefault = false
-    network = "acme_network"
+    network = "net"
     defaultRule = "Host(`{{ normalize .Name }}.acme.se`)"
   [providers.file]
     filename = "/etc/traefik/config.yml"
