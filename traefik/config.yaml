@@ -1,33 +1,35 @@
 http:
   routers:
     authelia:
-      rule: "Host(`authelia.acme.se`)"
+      rule: 'Host(`authelia.acme.se`)'
       entryPoints:
-        - "https"
-      service: authelia
+        - 'https'
+      service: 'authelia'
       middlewares:
-        - authelia
+        - 'authelia'
 
     traefik:
-      rule: "Host(`traefik.acme.se`)"
-      service: api@internal
+      rule: 'Host(`traefik.acme.se`)'
+      service: 'api@internal'
 
   services:
     authelia:
       loadBalancer:
         servers:
-          - url: http://authelia:9091
+          - url: 'http://authelia:9091'
 
     webserver:
       loadBalancer:
         servers:
-          - url: http://webserver:3000
+          - url: 'http://webserver.acme.se:3000'
 
   middlewares:
     authelia:
       forwardAuth:
-        address: http://authelia:9091/api/verify?rd=https://authelia.acme.se
+        address: 'http://authelia:9091/api/verify?rd=https://authelia.acme.se'
         trustForwardHeader: true
         authResponseHeaders:
-          - Remote-User
-          - Remote-Groups
+          - 'Remote-User'
+          - 'Remote-Groups'
+          - 'Remote-Email'
+          - 'Remote-Name'

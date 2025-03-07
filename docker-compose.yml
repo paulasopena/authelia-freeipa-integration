@@ -1,84 +1,91 @@
 version: '3.8'
 
 networks:
-  acme_network:
+  net:
     driver: bridge
   
 services:
   authelia:
-    image: authelia/authelia
-    container_name: authelia
+    image: 'authelia/authelia'
+    container_name: 'authelia'
+    restart: 'unless-stopped' 
     volumes:
-      - ./authelia:/config
+      - '${PWD}/authelia/config:/config'
     networks:
-      - acme_network
+      net: {}
+    environment:
+      TZ: "Sweden/Stockholm"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)"
-      - "traefik.http.routers.authelia.entrypoints=https"
-      - "traefik.http.routers.authelia.tls=true"
-      - "traefik.http.routers.authelia.tls.option=default"
-      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=http://authelia.acme.se:9091"
-      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.rule=Host(`authelia.acme.se`)'
+      - 'traefik.http.routers.authelia.entrypoints=https'
+      - 'traefik.http.routers.authelia.tls=true'
+      - 'traefik.http.routers.authelia.tls.option=default'
+      - 'traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=http://authelia.acme.se:9091'
+      - 'traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email'
     expose:  
       - 9091
     
 
 
   traefik:
-    image: traefik:v2.4
-    container_name: traefik
+    image: 'traefik:v2.4'
+    container_name: 'traefik'
+    restart: 'unless-stopped'
     command:
-       - '--api'
-       - '--providers.docker=true'
-       - '--providers.docker.exposedByDefault=false'
-       - '--providers.file.filename=/traefik/certificates.yml'
-       - '--entrypoints.http=true'
-       - '--entrypoints.http.address=:80'
-       - '--entrypoints.http.http.redirections.entrypoint.to=https'
-       - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
-       - '--entrypoints.https=true'
-       - '--entrypoints.https.address=:443'
-       - '--log=true'
-       - '--log.level=DEBUG'
-    ports:
-      - "80:80"
-      - "443:443"
+      - '--api=true'
+      - '--api.dashboard=true'
+      - '--api.insecure=false'
+      - '--pilot.dashboard=false'
+      - '--global.sendAnonymousUsage=false'
+      - '--global.checkNewVersion=false'
+      - '--log=true'
+      - '--log.level=DEBUG'
+      - '--log.filepath=/config/traefik.log'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedByDefault=false'
+      - '--entryPoints.http=true'
+      - '--entryPoints.http.address=:8080/tcp'
+      - '--entryPoints.http.http.redirections.entryPoint.to=https'
+      - '--entryPoints.http.http.redirections.entryPoint.scheme=https'
+      - '--entryPoints.http.forwardedHeaders.insecure=false'
+      - '--entryPoints.http.proxyProtocol.insecure=false'
+      - '--entryPoints.https=true'
+      - '--entryPoints.https.address=:8443/tcp'
+      - '--entryPoints.https.forwardedHeaders.insecure=false'
+      - '--entryPoints.https.proxyProtocol.insecure=false'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik:/traefik
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '${PWD}/traefik:/config'
     networks:
-      - acme_network
+      net: {}
+    ports:
+      - '80:8080'
+      - '443:8443'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`traefik.acme.se`)"
-      - "traefik.http.routers.api.entrypoints=https"
-      - "traefik.http.routers.api.middlewares=authelia"
-      - "traefik.http.routers.api.tls.options=default"
-      - "traefik.http.routers.api.tls=true"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api.rule=Host(`traefik.acme.se`)'
+      - 'traefik.http.routers.api.entrypoints=https'
+      - 'traefik.http.routers.api.middlewares=authelia@docker'
+      - 'traefik.http.routers.api.tls.options=default'
+      - 'traefik.http.routers.api.tls=true'
       - 'traefik.http.routers.api.service=api@internal'
 
   webserver:
     build:
-      context: ./webserver
-      dockerfile: Dockerfile
-    container_name: webserver
+      context: './webserver'
+      dockerfile: 'Dockerfile'
+    container_name: 'webserver'
     networks:
-      - acme_network
+      net: {}
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)"
-      - "traefik.http.routers.webserver.entrypoints=https"
-      - "traefik.http.routers.webserver.middlewares=authelia"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)'
+      - 'traefik.http.routers.webserver.entrypoints=https'
+      - 'traefik.http.routers.webserver.middlewares=authelia@docker'
       - 'traefik.http.routers.webserver.tls=true'
-      - 'traefik.http.routers.webserver.tls.options=default' 
-      - "traefik.http.routers.webserver.loadbalancer.server.port=3000"
-
-    expose: 
-      - 3000
-    
+ 
 
 
       
