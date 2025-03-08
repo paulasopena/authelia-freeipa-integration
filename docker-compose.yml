@@ -33,7 +33,7 @@ services:
         - "--providers.file.watch=true"
         - "--log.level=DEBUG"
     labels:
-      traefik.http.routers.api.entryPoints: 'https'
+      traefik.http.routers.api.entryPoints: 'http'
 
 
 
