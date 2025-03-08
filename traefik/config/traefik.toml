@@ -18,7 +18,10 @@
     rule = "Host(`authelia.acme.se`)"
     service = "authelia"
     [http.routers.authelia.tls]
-  
+  [http.routers.api]
+    rule = "Host(`traefik.acme.se`)"
+    service = "api@internal"
+    middlewares = ["authelia@file"]
 
 [http.services]
   [http.services.webserver]
