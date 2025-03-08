@@ -19,8 +19,6 @@
     service = "api@internal"
     middlewares = ["authelia"]
     tls=true
-    [http.routers.api.tls.options]
-        name = "default"
 
 [http.services]
   [http.services.webserver]
