@@ -22,10 +22,11 @@ services:
       - './traefik/logs:/logs'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.dashboard.rule: 'Host(`traefik.valid-domain.com`)'
+      traefik.http.routers.dashboard.rule: 'Host(`traefik.acme.se`)'
       traefik.http.routers.dashboard.entrypoints: 'https'
       traefik.http.routers.dashboard.middlewares: 'authelia'
       traefik.http.routers.dashboard.service: 'api@internal'
+
 
   whoami:
     image: 'traefik/whoami'
@@ -33,7 +34,7 @@ services:
     container_name: 'whoami'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.whoami.rule: 'Host(`whoami.valid-domain.com`)'
+      traefik.http.routers.whoami.rule: 'Host(`whoami.acme.se`)'
       traefik.http.routers.whoami.entrypoints: 'https'
     networks:
       proxy: {}
@@ -60,6 +61,8 @@ services:
     environment:
       TZ: 'America/Los_Angeles'
       X_AUTHELIA_CONFIG_FILTERS: 'template'
+    expose: 
+      - '9091'
 
   whoami-secure:
     image: 'traefik/whoami'
@@ -67,7 +70,7 @@ services:
     container_name: 'whoami-secure'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.whoami-secure.rule: 'Host(`whoami-secure.example.com`)'
+      traefik.http.routers.whoami-secure.rule: 'Host(`whoami-secure.acme.se`)'
       traefik.http.routers.whoami-secure.entrypoints: 'https'
       traefik.http.routers.whoami-secure.middlewares: 'authelia'
     networks:
