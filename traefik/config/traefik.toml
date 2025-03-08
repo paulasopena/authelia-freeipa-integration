@@ -17,7 +17,7 @@
   [http.routers.api]
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
-    entrypoints = "https"
+    entrypoints = ["https"]
     middlewares = ["authelia"]
     [http.routers.api.tls]
  
