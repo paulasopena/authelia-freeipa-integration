@@ -30,11 +30,6 @@
     [[http.services.authelia.loadBalancer.servers]]
       url = "http://authelia:9091/"
 
-[providers]
-  [providers.docker]
-    endpoint = "unix:///var/run/docker.sock"
-    exposedByDefault = false
-
 [http.middlewares]
   [http.middlewares.authelia.forwardAuth]
     address = "http://authelia:9091/api/verify?rd=https://authelia.acme.se:9091/"
@@ -42,6 +37,7 @@
     authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Name", "Remote-Email"]
 [api]
   dashboard = true
+  insecure = true
 
 [log]
   level = "DEBUG"
