@@ -9,7 +9,7 @@ services:
       - '443:443'
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ./traefik-config:/traefik
+      - ./traefik:/traefik
     command:
         - "--api=true"
         - "--api.insecure=true"
@@ -19,10 +19,6 @@ services:
         - "--providers.file.watch=true"
         - "--log.level=DEBUG"
 
-
-  
-      
-
   authelia:
     image: 'authelia/authelia:latest'
     container_name: 'authelia'
@@ -30,18 +26,6 @@ services:
       - './authelia/config:/config'
     networks:
       - 'net'
-    labels:
-      ## Expose Authelia through Traefik
-      traefik.enable: 'true'
-      traefik.docker.network: 'authelia'
-      traefik.http.routers.authelia.rule: 'Host(`authelia.acme.se`)'
-      traefik.http.routers.authelia.entrypoints: 'https'
-      ## Setup Authelia ForwardAuth Middlewares
-      traefik.http.middlewares.authelia.forwardAuth.address: 'http://authelia:9091/api/authz/forward-auth'
-      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: 'true'
-      traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Name,Remote-Email'
-
-
 
   webserver:
     build:
