@@ -4,10 +4,7 @@ services:
     container_name: 'traefik'
     restart: 'unless-stopped'
     networks:
-      proxy:
-        aliases:
-          - 'authelia.acme.se'
-      authelia: {}
+      - 'net'
     ports:
       - '80:80'
       - '443:443'
@@ -35,7 +32,8 @@ services:
       traefik.http.routers.whoami.rule: 'Host(`whoami.acme.se`)'
       traefik.http.routers.whoami.entrypoints: 'https'
     networks:
-      proxy: {}
+    - 'net'
+      
 
   authelia:
     image: 'authelia/authelia:4.38'
@@ -45,7 +43,7 @@ services:
       - './authelia/config:/config'
       - './authelia/logs:/var/log/authelia/'
     networks:
-      authelia: {}
+      - 'net'
     labels:
       ## Expose Authelia through Traefik
       traefik.enable: 'true'
@@ -60,7 +58,7 @@ services:
       TZ: 'America/Los_Angeles'
       X_AUTHELIA_CONFIG_FILTERS: 'template'
     expose: 
-      - '9091'
+      9091
 
   whoami-secure:
     image: 'traefik/whoami'
@@ -72,7 +70,7 @@ services:
       traefik.http.routers.whoami-secure.entrypoints: 'https'
       traefik.http.routers.whoami-secure.middlewares: 'authelia'
     networks:
-      proxy: {}
+    - 'net'
 
   webserver:
     build:
@@ -80,7 +78,7 @@ services:
       dockerfile: 'Dockerfile'
     container_name: 'webserver_acme'
     networks:
-      proxy: {}
+    - 'net'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)'
@@ -89,8 +87,5 @@ services:
       - 'traefik.http.routers.webserver.tls=true'
 
 networks:
-  proxy:
+  net:
     external: true
-    name: 'proxy'
-  authelia:
-    name: 'authelia'
