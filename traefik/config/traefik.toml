@@ -18,7 +18,9 @@
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
     middlewares = ["authelia"]
-    [http.routers.api.tls]
+    tls=true
+    [http.routers.api.tls.options]
+        name = "default"
 
 [http.services]
   [http.services.webserver]
@@ -28,8 +30,20 @@
     [[http.services.authelia.loadBalancer.servers]]
       url = "http://authelia:9091/"
 
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    exposedByDefault = false
+
 [http.middlewares]
   [http.middlewares.authelia.forwardAuth]
     address = "http://authelia:9091/api/verify?rd=https://authelia.acme.se:9091/"
     trustForwardHeader = true
     authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Name", "Remote-Email"]
+[api]
+  dashboard = true
+
+[log]
+  level = "DEBUG"
+
+[accessLog]
