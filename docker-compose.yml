@@ -42,4 +42,4 @@ services:
 
 networks:
   net:
-    bridge: true
+    driver: bridge
