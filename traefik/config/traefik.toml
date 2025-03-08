@@ -14,13 +14,12 @@
     rule = "Host(`authelia.acme.se`)"
     service = "authelia"
     [http.routers.authelia.tls]
-  [http.routers.traefik]
+  [http.routers.api]
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
-  [http.routers.api]
-    dashboard = true
-    insecure = true
-    middlewares = "authelia"
+    entrypoints = "https"
+    middlewares = "authelia@docker"
+ 
 
   
     
