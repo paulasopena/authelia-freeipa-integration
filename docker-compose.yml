@@ -29,7 +29,8 @@ services:
     ports: 
       - "9091:9091"
     networks:
-      - net
+      authelia: {}
+
 
   webserver:
     build:
@@ -45,3 +46,5 @@ services:
 networks:
   net:
     driver: bridge
+  authelia:
+    name: 'authelia'
