@@ -9,13 +9,13 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ./traefik:/traefik
+      - "${PWD}/traefik:/traefik"
     command:
         - "--api=true"
         - "--api.insecure=true"
         - "--api.dashboard=true"
         - "--entrypoints.webserver-entrypoint.address=:3000"
-        - "--providers.file.filename=./traefik/traefik.toml"
+        - "--providers.file.filename=${PWD}/traefik/traefik.toml"
         - "--providers.file.watch=true"
         - "--log.level=DEBUG"
 
