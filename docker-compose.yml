@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: 'traefik:latest'
+    image: 'traefik:v3.2.3'
     container_name: 'traefik'
     networks:
       - net
@@ -22,7 +22,7 @@ services:
 
 
   authelia:
-    image: 'authelia/authelia:latest'
+    image: 'authelia/authelia'
     container_name: 'authelia'
     volumes:
       - './authelia/config:/config'
