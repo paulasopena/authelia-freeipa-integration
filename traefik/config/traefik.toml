@@ -1,23 +1,25 @@
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+  [entryPoints.https]
+    address = ":443"
+
 [http.routers]
   [http.routers.webserver]
-    entryPoints = ["webserver"]
     rule = "Host(`webserver.acme.se`)"
-    service = "webserver-service"
+    service = webserver
     middlewares = "authelia"
     [http.routers.webserver.tls]
   [http.routers.authelia]
-    entryPoints = ["authelia"]
     rule = "Host(`authelia.acme.se`)"
-    service = "authelia-service"
+    service = authelia
     [http.routers.authelia.tls]
 
-
-
 [http.services]
-  [http.services.webserver-service]
+  [http.services.webserver]
     [[http.services.webserver.loadBalancer.servers]]
       url = "http://webserver.acme.se:3000/"
-  [http.services.authelia-service]
+  [http.services.authelia]
     [[http.services.authelia.loadBalancer.servers]]
       url = "http://authelia:9091/"
 
