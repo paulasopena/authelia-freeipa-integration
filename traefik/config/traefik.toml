@@ -18,8 +18,7 @@
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
     middlewares = ["authelia@file"]
-    [http.routers.api.tls]
-
+    
 [http.services]
   [http.services.webserver]
     [[http.services.webserver.loadBalancer.servers]]
