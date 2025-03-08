@@ -8,7 +8,7 @@
   [http.routers.webserver]
     rule = "Host(`webserver.acme.se`)"
     service = "webserver"
-    middlewares = "authelia"
+    middlewares = ["authelia@docker"]
     [http.routers.webserver.tls]
   [http.routers.authelia]
     rule = "Host(`authelia.acme.se`)"
@@ -18,7 +18,8 @@
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
     entrypoints = "https"
-    middlewares = "authelia@docker"
+    middlewares = ["authelia@docker"]
+    [http.routers.api.tls]
  
 
   
