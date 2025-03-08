@@ -3,7 +3,7 @@ log.level: debug
 jwt_secret: insecure_secret
 authentication_backend:
   ldap:
-    implementation: activedirectory
+    implementation: custom
     url: ldaps://ipasrv.acme.se
     timeout: 5s
     start_tls: true
