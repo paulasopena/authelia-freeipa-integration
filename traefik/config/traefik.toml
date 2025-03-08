@@ -4,7 +4,7 @@
   [entryPoints.https]
     address = ":443"
 [docker]
-  network: "authelia"
+  network = "authelia"
 
 [http.routers]
   [http.routers.webserver]
