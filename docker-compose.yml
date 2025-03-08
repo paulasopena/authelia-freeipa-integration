@@ -34,6 +34,7 @@ services:
         - "--log.level=DEBUG"
     labels:
       traefik.http.routers.api.entryPoints: 'http'
+      traefik.enable: 'true'
 
 
 
