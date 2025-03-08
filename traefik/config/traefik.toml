@@ -3,8 +3,6 @@
     address = ":80"
   [entryPoints.https]
     address = ":443"
-[docker]
-  network = "authelia"
 
 [http.routers]
   [http.routers.webserver]
