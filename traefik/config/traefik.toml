@@ -3,6 +3,7 @@
     address = ":80"
   [entryPoints.https]
     address = ":443"
+    [entryPoints.https:tls]
 
 [http.routers]
   [http.routers.webserver]
@@ -20,11 +21,6 @@
     entrypoints = ["https"]
     middlewares = ["authelia"]
     [http.routers.api.tls]
- 
-
-  
-    
-
 
 [http.services]
   [http.services.webserver]
