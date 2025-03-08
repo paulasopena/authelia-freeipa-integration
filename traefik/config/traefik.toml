@@ -1,6 +1,10 @@
 [entryPoints]
   [entryPoints.http]
     address = ":80"
+    [entryPoints.http.http.redirections]
+        [entryPoints.http.http.redirections.entryPoint]
+          to = "https"
+          scheme = "https"
   [entryPoints.https]
     address = ":443"
 
@@ -18,7 +22,7 @@
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
     middlewares = ["authelia@file"]
-    
+
 [http.services]
   [http.services.webserver]
     [[http.services.webserver.loadBalancer.servers]]
