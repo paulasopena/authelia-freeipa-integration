@@ -7,12 +7,12 @@
 [http.routers]
   [http.routers.webserver]
     rule = "Host(`webserver.acme.se`)"
-    service = webserver
+    service = "webserver"
     middlewares = "authelia"
     [http.routers.webserver.tls]
   [http.routers.authelia]
     rule = "Host(`authelia.acme.se`)"
-    service = authelia
+    service = "authelia"
     [http.routers.authelia.tls]
 
 [http.services]
