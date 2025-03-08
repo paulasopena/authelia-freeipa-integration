@@ -1,25 +1,11 @@
 server.port: 9091
 log.level: debug
 jwt_secret: insecure_secret
+
 authentication_backend:
-  ldap:
-    implementation: custom
-    url: ldaps://ipasrv.acme.se
-    timeout: 5s
-    start_tls: true
-    ca_cert: ../secrets/ca.crt
-    base_dn: DC=amce,DC=se
-#    additional_users_dn: OU=Users,OU=COMPANY
-    users_filter: (&(|({username_attribute}={input})({mail_attribute}={input}))(objectCategory=person)(objectClass=user)(!userAccountControl:1.2.840.113556.1.4.803:=2)(!pwdLastSet=0))
-    username_attribute: sAMAccountName
-    mail_attribute: mail
-    display_name_attribute: displayName
-    groups_filter: (&(member:1.2.840.113556.1.4.1941:={dn})(objectClass=group)(objectCategory=group))
-    group_name_attribute: cn
-    permit_referrals: false
-    permit_unauthenticated_bind: false
-    user: uid=admin,cn=users,cn=accounts,dc=acme,dc=se
-    password: NilsSmokesCoke2025!
+  file:
+    path: /config/users_database.yml
+    
 totp:
   disable: true
   
