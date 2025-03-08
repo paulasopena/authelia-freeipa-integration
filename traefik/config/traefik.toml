@@ -3,7 +3,7 @@
     address = ":80"
   [entryPoints.https]
     address = ":443"
-    
+
 [http.routers]
   [http.routers.webserver]
     rule = "Host(`webserver.acme.se`)"
@@ -17,7 +17,7 @@
   [http.routers.api]
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
-    entryPoints = ["https"]
+    entryPoint = ["https"]
     middlewares = ["authelia"]
     [http.routers.api.tls]
 
