@@ -17,6 +17,12 @@
   [http.routers.traefik]
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
+  [http.routers.api]
+    dashboard = true
+    insecure = true
+    middlewares = "authelia"
+
+  
     
 
 
