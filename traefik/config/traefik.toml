@@ -1,7 +1,9 @@
 [entryPoints]
   [entryPoints.http]
+    name = "http"
     address = ":80"
   [entryPoints.https]
+    name = "https"
     address = ":443"
 
 [http.routers]
