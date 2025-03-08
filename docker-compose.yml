@@ -58,7 +58,7 @@ services:
       TZ: 'America/Los_Angeles'
       X_AUTHELIA_CONFIG_FILTERS: 'template'
     expose: 
-      9091
+      - '9091'
 
   whoami-secure:
     image: 'traefik/whoami'
