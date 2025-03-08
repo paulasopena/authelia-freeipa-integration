@@ -21,6 +21,19 @@ services:
       traefik.http.routers.dashboard.entrypoints: 'https'
       traefik.http.routers.dashboard.middlewares: 'authelia'
       traefik.http.routers.dashboard.service: 'api@internal'
+    command:
+       - '--api'
+       - '--providers.docker=true'
+       - '--providers.docker.exposedByDefault=false'
+       - '--providers.file.filename=/traefik/certificates.yml'
+       - '--entrypoints.http=true'
+       - '--entrypoints.http.address=:80'
+       - '--entrypoints.http.http.redirections.entrypoint.to=https'
+       - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
+       - '--entrypoints.https=true'
+       - '--entrypoints.https.address=:443'
+       - '--log=true'
+       - '--log.level=DEBUG'
 
 
   whoami:
