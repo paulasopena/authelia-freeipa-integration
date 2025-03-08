@@ -4,7 +4,7 @@ jwt_secret: insecure_secret
 authentication_backend:
   ldap:
     implementation: activedirectory
-    url: ldap://ipasrv.acme.se
+    url: ldaps://ipasrv.acme.se
     timeout: 5s
     start_tls: false
     base_dn: DC=amce,DC=se
