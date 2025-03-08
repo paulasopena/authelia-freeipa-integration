@@ -2,8 +2,18 @@
 networks:
   net:
     driver: bridge
-    
+
 services:
+  authelia:
+    image: 'authelia/authelia'
+    container_name: 'authelia'
+    volumes:
+      - './authelia/config:/config'
+    ports: 
+      - "9091:9091"
+    networks:
+      net: {}
+  
   traefik:
     image: 'traefik:v3.2.3'
     container_name: 'traefik'
@@ -25,16 +35,6 @@ services:
     labels:
       traefik.http.routers.api.entryPoints: 'https'
 
-
-  authelia:
-    image: 'authelia/authelia'
-    container_name: 'authelia'
-    volumes:
-      - './authelia/config:/config'
-    ports: 
-      - "9091:9091"
-    networks:
-      net: {}
 
 
   webserver:
