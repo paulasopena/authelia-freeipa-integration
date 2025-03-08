@@ -29,11 +29,13 @@ session:
   expiration: 1h
   inactivity: 5m
   remember_me_duration:  1M
+  cookies: 
+    secure: false
 storage:
   encryption_key: a_very_important_secret
   local:
     path: /config/db.sqlite3
-    
+
 access_control:
   default_policy: one_factor
   rules:
