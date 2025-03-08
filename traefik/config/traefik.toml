@@ -33,6 +33,7 @@
     trustForwardHeader = true
     authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Name", "Remote-Email"]
 [api]
+  enabled = true
   dashboard = true
   insecure = true
 
