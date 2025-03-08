@@ -21,7 +21,7 @@ authentication_backend:
     password: NilsSmokesCoke2025!
 totp:
   disable: true
-  
+
 session:
   name: authelia_session
   domain: acme.se
@@ -30,11 +30,6 @@ session:
   expiration: 1h
   inactivity: 5m
   remember_me_duration:  1M
-
-storage:
-  encryption_key: a_very_important_secret
-  local:
-    path: /config/db.sqlite3
 
 access_control:
   default_policy: one_factor
