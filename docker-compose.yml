@@ -2,59 +2,32 @@ services:
   traefik:
     image: 'traefik:latest'
     container_name: 'traefik'
-    restart: 'unless-stopped'
     networks:
       - 'net'
     ports:
       - '80:80'
       - '443:443'
-    environment:
-      TZ: 'America/Los_Angeles'
     volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
-      - './traefik/config/traefik.yaml:/traefik.yaml:ro'
-      - './traefik/data/:/data'
-      - './traefik/logs:/logs'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.dashboard.rule: 'Host(`traefik.acme.se`)'
-      traefik.http.routers.dashboard.entrypoints: 'https'
-      traefik.http.routers.dashboard.middlewares: 'authelia'
-      traefik.http.routers.dashboard.service: 'api@internal'
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./traefik-config:/traefik
     command:
-       - '--api'
-       - '--providers.docker=true'
-       - '--providers.docker.exposedByDefault=false'
-       - '--providers.file.filename=/traefik/certificates.yml'
-       - '--entrypoints.http=true'
-       - '--entrypoints.http.address=:80'
-       - '--entrypoints.http.http.redirections.entrypoint.to=https'
-       - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
-       - '--entrypoints.https=true'
-       - '--entrypoints.https.address=:443'
-       - '--log=true'
-       - '--log.level=DEBUG'
+        - "--api=true"
+        - "--api.insecure=true"
+        - "--api.dashboard=true"
+        - "--entrypoints.webserver-entrypoint.address=:3000"
+        - "--providers.file.filename=/traefik/traefik.toml"
+        - "--providers.file.watch=true"
+        - "--log.level=DEBUG"
 
 
-  whoami:
-    image: 'traefik/whoami'
-    restart: 'unless-stopped'
-    container_name: 'whoami'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.whoami.rule: 'Host(`whoami.acme.se`)'
-      traefik.http.routers.whoami.entrypoints: 'https'
-    networks:
-    - 'net'
+  
       
 
   authelia:
-    image: 'authelia/authelia:4.38'
+    image: 'authelia/authelia:latest'
     container_name: 'authelia'
     volumes:
-      - './authelia/secrets:/secrets:ro'
       - './authelia/config:/config'
-      - './authelia/logs:/var/log/authelia/'
     networks:
       - 'net'
     labels:
@@ -67,23 +40,8 @@ services:
       traefik.http.middlewares.authelia.forwardAuth.address: 'http://authelia:9091/api/authz/forward-auth'
       traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: 'true'
       traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Name,Remote-Email'
-    environment:
-      TZ: 'America/Los_Angeles'
-      X_AUTHELIA_CONFIG_FILTERS: 'template'
-    expose: 
-      - '9091'
 
-  whoami-secure:
-    image: 'traefik/whoami'
-    restart: 'unless-stopped'
-    container_name: 'whoami-secure'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.whoami-secure.rule: 'Host(`whoami-secure.acme.se`)'
-      traefik.http.routers.whoami-secure.entrypoints: 'https'
-      traefik.http.routers.whoami-secure.middlewares: 'authelia'
-    networks:
-    - 'net'
+
 
   webserver:
     build:
@@ -92,12 +50,7 @@ services:
     container_name: 'webserver_acme'
     networks:
     - 'net'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)'
-      - 'traefik.http.routers.webserver.entrypoints=https'
-      - 'traefik.http.routers.webserver.middlewares=authelia'
-      - 'traefik.http.routers.webserver.tls=true'
+
 
 networks:
   net:

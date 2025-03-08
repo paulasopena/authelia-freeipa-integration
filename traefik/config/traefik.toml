@@ -1,28 +1,27 @@
-[entryPoints]
-  [entryPoints.http]
-    address = ":8080"
-    [entryPoints.http.proxyProtocol]
-      trustedIPs = ["192.168.1.0/24", "172.16.0.0/12"]
-  [entryPoints.https]
-    address = ":8443"
-    [entryPoints.https.proxyProtocol]
-      trustedIPs = ["192.168.1.0/24", "172.16.0.0/12"]
+[http.routers]
+  [http.routers.webserver]
+    entryPoints = ["webserver"]
+    rule = "Host(`webserver.acme.se`)"
+    service = "webserver-service"
+    middlewares = "authelia"
+    [http.routers.webserver.tls]
+  [http.routers.authelia]
+    entryPoints = ["authelia"]
+    rule = "Host(`authelia.acme.se`)"
+    service = "authelia-service"
+    [http.routers.authelia.tls]
 
-[providers]
-  [providers.docker]
-    endpoint = "unix://var/run/docker.sock"
-    exposedByDefault = false
-    network = "net"
-    defaultRule = "Host(`{{ normalize .Name }}.acme.se`)"
-  [providers.file]
-    filename = "/etc/traefik/config.yml"
 
-[api]
-  dashboard = true
-  insecure = true
+[http.services]
+  [http.services.webserver-service]
+    [[http.services.webserver.loadBalancer.servers]]
+      url = "http://webserver.acme.se:3000/"
+      [http.services.authelia-service]
+    [[http.services.authelia.loadBalancer.servers]]
+      url = "http://authelia:9091/"
 
-[certificatesResolvers.myresolver.acme]
-  email = "your-email@example.com"
-  storage = "/letsencrypt/acme.json"
-  [certificatesResolvers.myresolver.acme.tlsChallenge]
-    entryPoint = "web"
+[http.middlewares]
+  [http.middlewares.authelia.forwardAuth]
+    address = "http://authelia:9091/api/verify?rd=https://authelia.acme.se:9091/"
+    trustForwardHeader = true
+    authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Name", "Remote-Email"]
