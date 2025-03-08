@@ -34,6 +34,8 @@ services:
         - "--api.dashboard=true"
         - "--providers.file.filename=./traefik/config/traefik.toml"
         - "--providers.file.watch=true"
+        - '--entrypoints.http.redirections.entrypoint.to=https'
+        - '--entrypoints.http.redirections.entrypoint.scheme=https'
         - "--log.level=DEBUG"
     labels:
       traefik.http.routers.api.entryPoints: 'https'
