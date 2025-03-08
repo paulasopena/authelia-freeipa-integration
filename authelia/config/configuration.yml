@@ -6,7 +6,8 @@ authentication_backend:
     implementation: activedirectory
     url: ldaps://ipasrv.acme.se
     timeout: 5s
-    start_tls: false
+    start_tls: true
+    ca_cert: ../secrets/ca.crt
     base_dn: DC=amce,DC=se
 #    additional_users_dn: OU=Users,OU=COMPANY
     users_filter: (&(|({username_attribute}={input})({mail_attribute}={input}))(objectCategory=person)(objectClass=user)(!userAccountControl:1.2.840.113556.1.4.803:=2)(!pwdLastSet=0))
