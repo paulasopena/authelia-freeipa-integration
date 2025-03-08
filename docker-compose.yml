@@ -14,18 +14,17 @@ services:
       - '80:80'
       - '443:443'
     environment:
-      TZ: 'America/Los_Angeles' # see below
+      TZ: 'America/Los_Angeles'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
-      - './traefik/config/traefik.yml:/traefik.yml:ro'
-      - './traefik/config/dynamic.yml:/dynamic.yml:ro'
+      - './traefik/config/traefik.yaml:/traefik.yaml:ro'
       - './traefik/data/:/data'
       - './traefik/logs:/logs'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.dashboard.rule: 'Host(`traefik.acme.se`)'
+      traefik.http.routers.dashboard.rule: 'Host(`traefik.valid-domain.com`)'
       traefik.http.routers.dashboard.entrypoints: 'https'
-      traefik.http.routers.dashboard.middlewares: 'authelia@docker'
+      traefik.http.routers.dashboard.middlewares: 'authelia'
       traefik.http.routers.dashboard.service: 'api@internal'
 
   whoami:
@@ -34,7 +33,7 @@ services:
     container_name: 'whoami'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.whoami.rule: 'Host(`whoami.example.com`)'
+      traefik.http.routers.whoami.rule: 'Host(`whoami.valid-domain.com`)'
       traefik.http.routers.whoami.entrypoints: 'https'
     networks:
       proxy: {}
@@ -70,7 +69,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.whoami-secure.rule: 'Host(`whoami-secure.example.com`)'
       traefik.http.routers.whoami-secure.entrypoints: 'https'
-      traefik.http.routers.whoami-secure.middlewares: 'authelia@docker'
+      traefik.http.routers.whoami-secure.middlewares: 'authelia'
     networks:
       proxy: {}
 
@@ -85,7 +84,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.webserver.rule=Host(`webserver.acme.se`)'
       - 'traefik.http.routers.webserver.entrypoints=https'
-      - 'traefik.http.routers.webserver.middlewares=authelia@docker'
+      - 'traefik.http.routers.webserver.middlewares=authelia'
       - 'traefik.http.routers.webserver.tls=true'
 
 networks:
