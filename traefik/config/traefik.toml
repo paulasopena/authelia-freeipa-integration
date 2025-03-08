@@ -33,7 +33,7 @@
 
 [http.middlewares]
   [http.middlewares.authelia.forwardAuth]
-    address = "http://authelia:9091/api/verify?rd=https://authelia.acme.se:9091/"
+    address = "http://authelia:9091/api/verify?rd=http://authelia.acme.se:9091"
     trustForwardHeader = true
     authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Name", "Remote-Email"]
 
