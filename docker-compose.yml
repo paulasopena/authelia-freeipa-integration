@@ -15,7 +15,7 @@ services:
       net: {}
     labels: 
       - "traefik.enable=true"
-      - "traefik.http.routers.authelia.entrypoints=https"
+      - "traefik.http.routers.authelia.entrypoints=http"
   
   traefik:
     image: 'traefik:v3.2.3'
