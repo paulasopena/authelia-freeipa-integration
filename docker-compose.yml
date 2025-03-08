@@ -18,6 +18,9 @@ services:
         - "--providers.file.filename=./traefik/config/traefik.toml"
         - "--providers.file.watch=true"
         - "--log.level=DEBUG"
+    labels:
+      traefik.http.routers.api.entryPoints: 'https'
+
 
   authelia:
     image: 'authelia/authelia:latest'
