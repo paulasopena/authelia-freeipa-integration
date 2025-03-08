@@ -18,7 +18,6 @@
     rule = "Host(`traefik.acme.se`)"
     service = "api@internal"
     middlewares = ["authelia"]
-    tls=true
 
 [http.services]
   [http.services.webserver]
