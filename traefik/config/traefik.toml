@@ -32,10 +32,6 @@
     address = "http://authelia:9091/api/verify?rd=https://authelia.acme.se:9091/"
     trustForwardHeader = true
     authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Name", "Remote-Email"]
-[api]
-  enabled = true
-  dashboard = true
-  insecure = true
 
 [log]
   level = "DEBUG"
