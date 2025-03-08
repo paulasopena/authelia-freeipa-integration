@@ -3,7 +3,7 @@
     address = ":80"
   [entryPoints.https]
     address = ":443"
-    [entryPoints.https:tls]
+    [entryPoints.https.tls]
 
 [http.routers]
   [http.routers.webserver]
