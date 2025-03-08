@@ -15,7 +15,7 @@ services:
         - "--api.insecure=true"
         - "--api.dashboard=true"
         - "--entrypoints.webserver-entrypoint.address=:3000"
-        - "--providers.file.filename=/traefik/traefik.toml"
+        - "--providers.file.filename=./traefik/traefik.toml"
         - "--providers.file.watch=true"
         - "--log.level=DEBUG"
 
