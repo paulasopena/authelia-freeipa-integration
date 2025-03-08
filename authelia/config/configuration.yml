@@ -32,15 +32,9 @@ session:
   remember_me_duration:  1M
 
 storage:
-  encryption_key: a_very_important_secret
+  encryption_key: you_must_generate_a_random_string_of_more_than_twenty_chars_and_configure_this
   local:
     path: /config/db.sqlite3
-  mysql: # or postgres if you are using PostgreSQL
-    host: localhost
-    port: 3306
-    database: authelia
-    username: authelia
-    password: authelia_password
 
 access_control:
   default_policy: one_factor
